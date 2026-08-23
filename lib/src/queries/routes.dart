@@ -26,7 +26,7 @@ class RouteQueries {
 
   Route getOriginalRouteById(int routeId) {
     int offset = routesOffset + routes.routeLengths.sublist(0, routeId).fold(0, (a, b) => a + b);
-    return Route.fromBuffer(access.readSync(offset, routes.routeLengths[routeId]));
+    return Route.fromBuffer(access.read(offset, routes.routeLengths[routeId]));
   }
 
   Map<int, Route> getOriginalRoutesForStops(Iterable<Stop> stops) {
@@ -35,7 +35,7 @@ class RouteQueries {
     int offset = routesOffset;
     for (final routeId in routes.routeLengths.indexed) {
       if (routeIds.contains(routeId.$1)) {
-        result[routeId.$1] = Route.fromBuffer(access.readSync(offset, routeId.$2));
+        result[routeId.$1] = Route.fromBuffer(access.read(offset, routeId.$2));
       }
       offset += routeId.$2.abs();
     }

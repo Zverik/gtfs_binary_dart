@@ -1,13 +1,14 @@
 import 'dart:io';
 
 import 'package:gtfs_binary_dart/gtfs_binary_dart.dart';
+import 'package:gtfs_binary_dart/src/helpers/binary_reader.dart';
 import 'package:gtfs_binary_dart/src/helpers/just_date.dart';
 import 'package:gtfs_binary_dart/src/helpers/just_time.dart';
 import 'package:gtfs_binary_dart/src/models/schedule_item.dart';
 import 'package:test/test.dart';
 
 void main() {
-  final file = File('test/fixture/feed.gtb');
+  final file = BinaryFileReader(File('test/fixture/feed.gtb').openSync());
   final binary = GtfsBinary.read(file).withFile(file);
   final stops = {for (final stop in binary.autocompleteStops('stop')) stop.gtfsId: stop};
 

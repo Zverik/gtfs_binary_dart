@@ -32,8 +32,6 @@ class GtbFormatError extends IOException {
 class FileNotAttachedException extends IOException {}
 
 class GtfsBinary {
-  static final int kGeohashPrecision = 24;
-
   final Footer footer;
   final Agencies agencies;
   final ShapeMetadata? shapes;
@@ -94,7 +92,7 @@ class GtfsBinary {
            ? null
            : ShapeQueries(access: access, shapesOffset: shapesOffset, shapes: shapes);
 
-  GtfsBinary withFile(File file) => GtfsBinary(
+  GtfsBinary withFile(BinaryReader reader) => GtfsBinary(
     footer: footer,
     agencies: agencies,
     shapes: shapes,
@@ -108,34 +106,33 @@ class GtfsBinary {
     monthsOffset: monthsOffset,
     routes: routes,
     routesOffset: routesOffset,
-    access: BinaryReader(file.openSync(mode: FileMode.read), compressed: footer.compressed),
+    access: reader.setCompressed(footer.compressed),
   );
 
   /// Reads the GTFS Binary file metadata instantiating the structures in memory.
   /// Given it does a lot, better call it in an isolate. Do not forget to call [withFile] after.
-  static GtfsBinary read(File file) {
-    final access = BinaryReader(file.openSync(mode: FileMode.read));
-    final signature = access.readSync(0, 4);
+  static GtfsBinary read(BinaryReader access) {
+    final signature = access.read(0, 4);
     final hexSign = signature.toList().map((v) => v.toRadixString(16).padLeft(2, '0')).join();
     if (hexSign != '4754420a') {
       throw GtbFormatError('Incorrect header, expected "GTB\\n": $hexSign');
     }
 
-    final footerLenBytes = access.readSync(-2, 2);
+    final footerLenBytes = access.read(-2, 2);
     final footerLen = (footerLenBytes[0] << 8) + footerLenBytes[1];
-    final footer = Footer.fromBuffer(access.readSync(-2 - footerLen, footerLen));
+    final footer = Footer.fromBuffer(access.read(-2 - footerLen, footerLen));
 
     final blocks = {for (final block in footer.blocks) block.block: block};
-    final agencies = Agencies.fromBuffer(access.readBlockSync(blocks[Block.B_AGENCIES]!));
+    final agencies = Agencies.fromBuffer(access.readBlock(blocks[Block.B_AGENCIES]!));
     final shapes = blocks.containsKey(Block.B_SHAPES)
-        ? ShapeMetadata.fromBuffer(access.readBlockSync(blocks[Block.B_SHAPES]!))
+        ? ShapeMetadata.fromBuffer(access.readBlock(blocks[Block.B_SHAPES]!))
         : null;
-    final stops = StopMetadata.fromBuffer(access.readBlockSync(blocks[Block.B_STOPS]!));
+    final stops = StopMetadata.fromBuffer(access.readBlock(blocks[Block.B_STOPS]!));
     final lookup = blocks.containsKey(Block.B_LOOKUP)
-        ? LookupMetadata.fromBuffer(access.readBlockSync(blocks[Block.B_LOOKUP]!))
+        ? LookupMetadata.fromBuffer(access.readBlock(blocks[Block.B_LOOKUP]!))
         : null;
-    final calendar = CalendarMetadata.fromBuffer(access.readBlockSync(blocks[Block.B_CALENDAR]!));
-    final routes = RouteMetadata.fromBuffer(access.readBlockSync(blocks[Block.B_ROUTES]!));
+    final calendar = CalendarMetadata.fromBuffer(access.readBlock(blocks[Block.B_CALENDAR]!));
+    final routes = RouteMetadata.fromBuffer(access.readBlock(blocks[Block.B_ROUTES]!));
 
     return GtfsBinary(
       footer: footer,
@@ -176,9 +173,11 @@ class GtfsBinary {
 
   List<Stop> findStopsAround(LatLng center, double radiusMeters) {
     if (stopQueries == null) throw FileNotAttachedException();
-    final hashes = geohash.forCircle(center.latitude, center.longitude, radiusMeters, kGeohashPrecision);
+    final hashes = geohash.forCircle(center.latitude, center.longitude, radiusMeters, StopQueries.kGeohashPrecision);
     final allStops = stopQueries!.findStopsForGeohashes(hashes);
     final distance = DistanceEquirectangular();
+    final distances = allStops.map((s) => (s.gtfsId, distance(center, s.location))).toList();
+    print('Distances: $distances');
     return allStops.where((s) => distance(center, s.location) <= radiusMeters).toList();
   }
 
@@ -189,7 +188,7 @@ class GtfsBinary {
       southWest.longitude,
       northEast.latitude,
       northEast.longitude,
-      kGeohashPrecision,
+      StopQueries.kGeohashPrecision,
     );
     final allStops = stopQueries!.findStopsForGeohashes(hashes);
     return allStops

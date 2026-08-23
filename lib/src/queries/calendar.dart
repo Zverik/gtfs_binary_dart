@@ -37,7 +37,7 @@ class CalendarQueries {
     int offset = monthsOffset;
     for (int i = 0; i < chunk; i++) offset += calendar.monthLengths[i].abs();
 
-    final bytes = access.readSync(offset, calendar.monthLengths[chunk]);
+    final bytes = access.read(offset, calendar.monthLengths[chunk]);
     final month = CalendarMonth.fromBuffer(bytes);
     int currentDate = chunk * calendar.daysInMonth;
     int dayInMonth = -1;

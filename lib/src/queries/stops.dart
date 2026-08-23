@@ -6,6 +6,8 @@ import 'package:gtfs_binary_dart/src/proto/gtfs_binary.pb.dart';
 import 'package:latlong2/latlong.dart';
 
 class StopQueries {
+  static final int kGeohashPrecision = 24;
+
   final BinaryReader access;
   final StopMetadata stops;
   final int stopsOffset;
@@ -20,8 +22,9 @@ class StopQueries {
     this.stopByGtfsId,
   });
 
-  List<Stop> _decodeStopsChunk(int offset, int length, int firstId, int count, bool hasStations) {
-    final data = BinaryDecoder(access.readSync(offset, length));
+  List<Stop> _decodeStopsChunk(int offset, int length, int firstId, int count) {
+    final hasStations = this.stops.hasStations;
+    final data = BinaryDecoder(access.read(offset, length));
     final gtfsIds = data.readStrings(count);
     final codes = data.readStrings(count);
     final names = data.readStrings(count);
@@ -68,12 +71,13 @@ class StopQueries {
     for (final stopChunk in stops.chunkLengths.indexed) {
       final stopCount = stops.chunkStopCounts[stopChunk.$1];
       if (stopIds[nextStopId] < firstStopId + stopCount) {
-        final readStops = _decodeStopsChunk(offset, stopChunk.$2, firstStopId, stopCount, stops.hasStations);
+        final readStops = _decodeStopsChunk(offset, stopChunk.$2, firstStopId, stopCount);
         while (nextStopId < stopIds.length && stopIds[nextStopId] < firstStopId + stopCount) {
           result.add(readStops[stopIds[nextStopId] - firstStopId]);
           nextStopId += 1;
         }
       }
+      if (nextStopId >= stopIds.length) break;
       offset += stopChunk.$2.abs();
       firstStopId += stopCount;
     }
@@ -94,8 +98,7 @@ class StopQueries {
   }
 
   List<Stop> findStopsForGeohashes(List<int> hashes) {
-    // TODO: clear the first bit!
-    final hashSet = Set.of(hashes);
+    final hashSet = Set.of(hashes.map((hash) => hash ^ (1 << kGeohashPrecision)));
     final result = <Stop>[];
     int offset = stopsOffset;
     int currentGeohash = 0;
@@ -105,9 +108,9 @@ class StopQueries {
       final stopCount = stops.chunkStopCounts[geohash.$1];
       final length = stops.chunkLengths[geohash.$1];
       if (hashSet.contains(currentGeohash ^ stops.geohashXor)) {
-        result.addAll(_decodeStopsChunk(offset, length, firstStopId, stopCount, stops.hasStations));
+        result.addAll(_decodeStopsChunk(offset, length, firstStopId, stopCount));
       }
-      offset += length;
+      offset += length.abs();
       firstStopId += stopCount;
     }
     return result;

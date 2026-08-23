@@ -1,12 +1,13 @@
 import 'dart:io';
 
 import 'package:gtfs_binary_dart/gtfs_binary_dart.dart';
+import 'package:gtfs_binary_dart/src/helpers/binary_reader.dart';
 import 'package:gtfs_binary_dart/src/proto/gtfs_binary.pb.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:test/test.dart';
 
 void main() {
-  final file = File('test/fixture/feed.gtb');
+  final file = BinaryFileReader(File('test/fixture/feed.gtb').openSync());
   final binary = GtfsBinary.read(file).withFile(file);
 
   test('Agencies', () {
@@ -24,6 +25,17 @@ void main() {
     expect(stop3.location, LatLng(41.8911, 12.4930));
     expect(stop3.wheelchair, Accessibility.A_NO);
     expect(stop3.routes, hasLength(1));
+  });
+
+  test('Stop lookups', () {
+    final stops = binary.autocompleteStops('stop');
+    expect(stops, hasLength(7));
+
+    final stops2 = binary.findStopsForBounds(LatLng(41.89, 12.49), LatLng(41.8903, 12.49315));
+    expect(stops2.map((s) => s.gtfsId).toSet(), {'stop1', 'stop2', 'stop5', 'stop6'});
+
+    final stops3 = binary.findStopsAround(LatLng(41.8911, 12.4929), 30);
+    expect(stops3.map((s) => s.gtfsId).toSet(), {'stop3', 'stop4'});
   });
 
   test('Routes and agencies are okay', () {

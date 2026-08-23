@@ -12,7 +12,7 @@ class ShapeQueries {
   List<LatLng> getShapeById(int shapeId) {
     int chunkId = (shapeId / shapes.chunkSize).floor();
     int offset = shapesOffset + shapes.chunkLengths.sublist(0, chunkId).fold(0, (a, b) => a + b);
-    final chunk = ShapeChunk.fromBuffer(access.readSync(offset, shapes.chunkLengths[chunkId]));
+    final chunk = ShapeChunk.fromBuffer(access.read(offset, shapes.chunkLengths[chunkId]));
     final shape = chunk.shapes[shapeId - chunkId * shapes.chunkSize];
     final path = <LatLng>[];
     int lastLon = 0;

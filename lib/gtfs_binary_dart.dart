@@ -9,5 +9,6 @@ export 'src/models/departure.dart';
 export 'src/models/schedule_item.dart';
 export 'src/helpers/just_date.dart';
 export 'src/helpers/just_time.dart';
+export 'src/helpers/binary_reader.dart';
 export 'src/proto/gtfs_binary.pbenum.dart';
 export 'src/proto/gtfs_binary.pb.dart' show Agency, Realtime;

@@ -3,51 +3,70 @@ import 'dart:typed_data';
 import 'package:gtfs_binary_dart/src/proto/gtfs_binary.pb.dart';
 import 'package:libcompress/libcompress.dart';
 
-class BinaryReader {
-  final RandomAccessFile _file;
+abstract class BinaryReader {
+  bool compressed;
   final _zstd = ZstdCodec();
-  final bool compressed;
 
-  BinaryReader(this._file, {this.compressed = false});
+  BinaryReader({required this.compressed});
 
-  void seekSync(int offset) {
+  BinaryReader setCompressed(bool compressed) {
+    this.compressed = compressed;
+    return this;
+  }
+
+  void seek(int offset) {
     if (offset < 0) {
-      _file.setPositionSync(_file.lengthSync() + offset);
+      seekImpl(fileLengthImpl() + offset);
     } else {
-      _file.setPositionSync(offset);
+      seekImpl(offset);
     }
   }
 
-  Future<void> seek(int offset) async {
-    if (offset < 0) {
-      await _file.setPosition(await _file.length() + offset);
-    } else {
-      await _file.setPosition(offset);
-    }
-  }
-
-  Uint8List readSync(int offset, int length, {bool? compressed}) {
-    seekSync(offset);
-    final data = _file.readSync(length.abs());
+  Uint8List read(int offset, int length, {bool? compressed}) {
+    seek(offset);
+    final data = readImpl(length.abs());
     if (length > 0 && (compressed ?? this.compressed)) {
       return _zstd.decompress(data);
     }
     return data;
   }
 
-  Future<Uint8List> read(int offset, int length, {bool? compressed}) async {
-    await seek(offset);
-    final data = await _file.read(length.abs());
-    if (length > 0 && (compressed ?? this.compressed)) {
-      // note: not async!
-      return _zstd.decompress(data);
-    }
-    return data;
+  Uint8List readBlock(BlockMetadata block) => read(block.offset.toInt(), block.length, compressed: block.compressed);
+
+  int fileLengthImpl();
+  void seekImpl(int offset);
+  Uint8List readImpl(int length);
+}
+
+class BinaryDataReader extends BinaryReader {
+  final ByteBuffer _buffer;
+  int _pos = 0;
+
+  BinaryDataReader(this._buffer, {super.compressed = false});
+
+  @override
+  void seekImpl(int offset) {
+    _pos = offset;
   }
 
-  Uint8List readBlockSync(BlockMetadata block) =>
-      readSync(block.offset.toInt(), block.length, compressed: block.compressed);
+  @override
+  int fileLengthImpl() => _buffer.lengthInBytes;
 
-  Future<Uint8List> readBlock(BlockMetadata block) =>
-      read(block.offset.toInt(), block.length, compressed: block.compressed);
+  @override
+  Uint8List readImpl(int length) => Uint8List.view(_buffer, _pos, length);
+}
+
+class BinaryFileReader extends BinaryReader {
+  final RandomAccessFile _file;
+
+  BinaryFileReader(this._file, {super.compressed = false});
+
+  @override
+  void seekImpl(int offset) => _file.setPositionSync(offset);
+
+  @override
+  int fileLengthImpl() => _file.lengthSync();
+
+  @override
+  Uint8List readImpl(int length) => _file.readSync(length);
 }
