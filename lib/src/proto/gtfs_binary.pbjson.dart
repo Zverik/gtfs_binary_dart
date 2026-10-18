@@ -38,12 +38,15 @@ const RealtimeType$json = {
   '2': [
     {'1': 'RT_UNKNOWN', '2': 0},
     {'1': 'RT_GTFS', '2': 1},
+    {'1': 'RT_SIRI', '2': 2},
+    {'1': 'RT_SIRI_JSON', '2': 3},
   ],
 };
 
 /// Descriptor for `RealtimeType`. Decode as a `google.protobuf.EnumDescriptorProto`.
 final $typed_data.Uint8List realtimeTypeDescriptor = $convert.base64Decode(
-    'CgxSZWFsdGltZVR5cGUSDgoKUlRfVU5LTk9XThAAEgsKB1JUX0dURlMQAQ==');
+    'CgxSZWFsdGltZVR5cGUSDgoKUlRfVU5LTk9XThAAEgsKB1JUX0dURlMQARILCgdSVF9TSVJJEA'
+    'ISEAoMUlRfU0lSSV9KU09OEAM=');
 
 @$core.Deprecated('Use accessibilityDescriptor instead')
 const Accessibility$json = {
@@ -58,6 +61,23 @@ const Accessibility$json = {
 /// Descriptor for `Accessibility`. Decode as a `google.protobuf.EnumDescriptorProto`.
 final $typed_data.Uint8List accessibilityDescriptor = $convert.base64Decode(
     'Cg1BY2Nlc3NpYmlsaXR5Eg0KCUFfVU5LTk9XThAAEgoKBkFfU09NRRABEggKBEFfTk8QAg==');
+
+@$core.Deprecated('Use directionDescriptor instead')
+const Direction$json = {
+  '1': 'Direction',
+  '2': [
+    {'1': 'D_UNKNOWN', '2': 0},
+    {'1': 'D_NORTH', '2': 1},
+    {'1': 'D_EAST', '2': 2},
+    {'1': 'D_SOUTH', '2': 3},
+    {'1': 'D_WEST', '2': 4},
+  ],
+};
+
+/// Descriptor for `Direction`. Decode as a `google.protobuf.EnumDescriptorProto`.
+final $typed_data.Uint8List directionDescriptor = $convert.base64Decode(
+    'CglEaXJlY3Rpb24SDQoJRF9VTktOT1dOEAASCwoHRF9OT1JUSBABEgoKBkRfRUFTVBACEgsKB0'
+    'RfU09VVEgQAxIKCgZEX1dFU1QQBA==');
 
 @$core.Deprecated('Use pickupDropoffDescriptor instead')
 const PickupDropoff$json = {
@@ -112,19 +132,24 @@ const Footer$json = {
   '1': 'Footer',
   '2': [
     {'1': 'version', '3': 1, '4': 1, '5': 13, '10': 'version'},
-    {'1': 'date', '3': 2, '4': 1, '5': 13, '10': 'date'},
+    {'1': 'build', '3': 2, '4': 1, '5': 13, '10': 'build'},
     {'1': 'original_url', '3': 3, '4': 1, '5': 9, '10': 'originalUrl'},
     {'1': 'compressed', '3': 4, '4': 1, '5': 8, '10': 'compressed'},
+    {'1': 'bbox_lat_lon', '3': 5, '4': 3, '5': 17, '10': 'bboxLatLon'},
     {'1': 'blocks', '3': 6, '4': 3, '5': 11, '6': '.gtfs.BlockMetadata', '10': 'blocks'},
+    {'1': 'title', '3': 7, '4': 1, '5': 9, '10': 'title'},
+    {'1': 'title_en', '3': 8, '4': 1, '5': 9, '10': 'titleEn'},
+    {'1': 'date', '3': 9, '4': 1, '5': 13, '10': 'date'},
   ],
 };
 
 /// Descriptor for `Footer`. Decode as a `google.protobuf.DescriptorProto`.
 final $typed_data.Uint8List footerDescriptor = $convert.base64Decode(
-    'CgZGb290ZXISGAoHdmVyc2lvbhgBIAEoDVIHdmVyc2lvbhISCgRkYXRlGAIgASgNUgRkYXRlEi'
-    'EKDG9yaWdpbmFsX3VybBgDIAEoCVILb3JpZ2luYWxVcmwSHgoKY29tcHJlc3NlZBgEIAEoCFIK'
-    'Y29tcHJlc3NlZBIrCgZibG9ja3MYBiADKAsyEy5ndGZzLkJsb2NrTWV0YWRhdGFSBmJsb2Nrcw'
-    '==');
+    'CgZGb290ZXISGAoHdmVyc2lvbhgBIAEoDVIHdmVyc2lvbhIUCgVidWlsZBgCIAEoDVIFYnVpbG'
+    'QSIQoMb3JpZ2luYWxfdXJsGAMgASgJUgtvcmlnaW5hbFVybBIeCgpjb21wcmVzc2VkGAQgASgI'
+    'Ugpjb21wcmVzc2VkEiAKDGJib3hfbGF0X2xvbhgFIAMoEVIKYmJveExhdExvbhIrCgZibG9ja3'
+    'MYBiADKAsyEy5ndGZzLkJsb2NrTWV0YWRhdGFSBmJsb2NrcxIUCgV0aXRsZRgHIAEoCVIFdGl0'
+    'bGUSGQoIdGl0bGVfZW4YCCABKAlSB3RpdGxlRW4SEgoEZGF0ZRgJIAEoDVIEZGF0ZQ==');
 
 @$core.Deprecated('Use blockMetadataDescriptor instead')
 const BlockMetadata$json = {
@@ -171,7 +196,7 @@ const Agency$json = {
     {'1': 'fare_url', '3': 6, '4': 1, '5': 9, '10': 'fareUrl'},
     {'1': 'email', '3': 7, '4': 1, '5': 9, '10': 'email'},
     {'1': 'ticket_info', '3': 8, '4': 1, '5': 13, '10': 'ticketInfo'},
-    {'1': 'realtime', '3': 9, '4': 1, '5': 13, '10': 'realtime'},
+    {'1': 'realtime', '3': 9, '4': 3, '5': 13, '10': 'realtime'},
   ],
 };
 
@@ -180,7 +205,7 @@ final $typed_data.Uint8List agencyDescriptor = $convert.base64Decode(
     'CgZBZ2VuY3kSEgoEbmFtZRgBIAEoCVIEbmFtZRIQCgN1cmwYAiABKAlSA3VybBIaCgh0aW1lem'
     '9uZRgDIAEoCVIIdGltZXpvbmUSEgoEbGFuZxgEIAEoCVIEbGFuZxIUCgVwaG9uZRgFIAEoCVIF'
     'cGhvbmUSGQoIZmFyZV91cmwYBiABKAlSB2ZhcmVVcmwSFAoFZW1haWwYByABKAlSBWVtYWlsEh'
-    '8KC3RpY2tldF9pbmZvGAggASgNUgp0aWNrZXRJbmZvEhoKCHJlYWx0aW1lGAkgASgNUghyZWFs'
+    '8KC3RpY2tldF9pbmZvGAggASgNUgp0aWNrZXRJbmZvEhoKCHJlYWx0aW1lGAkgAygNUghyZWFs'
     'dGltZQ==');
 
 @$core.Deprecated('Use realtimeDescriptor instead')
@@ -246,6 +271,7 @@ const StopMetadata$json = {
     {'1': 'chunk_lengths', '3': 3, '4': 3, '5': 17, '10': 'chunkLengths'},
     {'1': 'chunk_stop_counts', '3': 4, '4': 3, '5': 13, '10': 'chunkStopCounts'},
     {'1': 'has_stations', '3': 5, '4': 1, '5': 8, '10': 'hasStations'},
+    {'1': 'has_directions', '3': 6, '4': 1, '5': 8, '10': 'hasDirections'},
   ],
 };
 
@@ -254,7 +280,8 @@ final $typed_data.Uint8List stopMetadataDescriptor = $convert.base64Decode(
     'CgxTdG9wTWV0YWRhdGESHwoLZ2VvaGFzaF94b3IYASABKA1SCmdlb2hhc2hYb3ISHAoJZ2VvaG'
     'FzaGVzGAIgAygNUglnZW9oYXNoZXMSIwoNY2h1bmtfbGVuZ3RocxgDIAMoEVIMY2h1bmtMZW5n'
     'dGhzEioKEWNodW5rX3N0b3BfY291bnRzGAQgAygNUg9jaHVua1N0b3BDb3VudHMSIQoMaGFzX3'
-    'N0YXRpb25zGAUgASgIUgtoYXNTdGF0aW9ucw==');
+    'N0YXRpb25zGAUgASgIUgtoYXNTdGF0aW9ucxIlCg5oYXNfZGlyZWN0aW9ucxgGIAEoCFINaGFz'
+    'RGlyZWN0aW9ucw==');
 
 @$core.Deprecated('Use stopsChunkDescriptor instead')
 const StopsChunk$json = {
@@ -270,6 +297,7 @@ const StopsChunk$json = {
     {'1': 'route_ids', '3': 8, '4': 3, '5': 13, '10': 'routeIds'},
     {'1': 'is_station', '3': 9, '4': 1, '5': 8, '10': 'isStation'},
     {'1': 'parent_id', '3': 10, '4': 1, '5': 13, '10': 'parentId'},
+    {'1': 'direction', '3': 11, '4': 1, '5': 14, '6': '.gtfs.Direction', '10': 'direction'},
     {'1': 'geohash', '3': 30, '4': 1, '5': 13, '10': 'geohash'},
   ],
 };
@@ -280,8 +308,9 @@ final $typed_data.Uint8List stopsChunkDescriptor = $convert.base64Decode(
     'RlEhIKBG5hbWUYAyABKAlSBG5hbWUSEgoEZGVzYxgEIAEoCVIEZGVzYxIQCgNsYXQYBSABKBFS'
     'A2xhdBIQCgNsb24YBiABKBFSA2xvbhIzCgp3aGVlbGNoYWlyGAcgASgOMhMuZ3Rmcy5BY2Nlc3'
     'NpYmlsaXR5Ugp3aGVlbGNoYWlyEhsKCXJvdXRlX2lkcxgIIAMoDVIIcm91dGVJZHMSHQoKaXNf'
-    'c3RhdGlvbhgJIAEoCFIJaXNTdGF0aW9uEhsKCXBhcmVudF9pZBgKIAEoDVIIcGFyZW50SWQSGA'
-    'oHZ2VvaGFzaBgeIAEoDVIHZ2VvaGFzaA==');
+    'c3RhdGlvbhgJIAEoCFIJaXNTdGF0aW9uEhsKCXBhcmVudF9pZBgKIAEoDVIIcGFyZW50SWQSLQ'
+    'oJZGlyZWN0aW9uGAsgASgOMg8uZ3Rmcy5EaXJlY3Rpb25SCWRpcmVjdGlvbhIYCgdnZW9oYXNo'
+    'GB4gASgNUgdnZW9oYXNo');
 
 @$core.Deprecated('Use lookupMetadataDescriptor instead')
 const LookupMetadata$json = {

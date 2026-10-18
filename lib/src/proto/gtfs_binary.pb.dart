@@ -23,17 +23,21 @@ export 'gtfs_binary.pbenum.dart';
 class Footer extends $pb.GeneratedMessage {
   factory Footer({
     $core.int? version,
-    $core.int? date,
+    $core.int? build,
     $core.String? originalUrl,
     $core.bool? compressed,
+    $core.Iterable<$core.int>? bboxLatLon,
     $core.Iterable<BlockMetadata>? blocks,
+    $core.String? title,
+    $core.String? titleEn,
+    $core.int? date,
   }) {
     final $result = create();
     if (version != null) {
       $result.version = version;
     }
-    if (date != null) {
-      $result.date = date;
+    if (build != null) {
+      $result.build = build;
     }
     if (originalUrl != null) {
       $result.originalUrl = originalUrl;
@@ -41,8 +45,20 @@ class Footer extends $pb.GeneratedMessage {
     if (compressed != null) {
       $result.compressed = compressed;
     }
+    if (bboxLatLon != null) {
+      $result.bboxLatLon.addAll(bboxLatLon);
+    }
     if (blocks != null) {
       $result.blocks.addAll(blocks);
+    }
+    if (title != null) {
+      $result.title = title;
+    }
+    if (titleEn != null) {
+      $result.titleEn = titleEn;
+    }
+    if (date != null) {
+      $result.date = date;
     }
     return $result;
   }
@@ -52,10 +68,14 @@ class Footer extends $pb.GeneratedMessage {
 
   static final $pb.BuilderInfo _i = $pb.BuilderInfo(_omitMessageNames ? '' : 'Footer', package: const $pb.PackageName(_omitMessageNames ? '' : 'gtfs'), createEmptyInstance: create)
     ..a<$core.int>(1, _omitFieldNames ? '' : 'version', $pb.PbFieldType.OU3)
-    ..a<$core.int>(2, _omitFieldNames ? '' : 'date', $pb.PbFieldType.OU3)
+    ..a<$core.int>(2, _omitFieldNames ? '' : 'build', $pb.PbFieldType.OU3)
     ..aOS(3, _omitFieldNames ? '' : 'originalUrl')
     ..aOB(4, _omitFieldNames ? '' : 'compressed')
+    ..p<$core.int>(5, _omitFieldNames ? '' : 'bboxLatLon', $pb.PbFieldType.KS3)
     ..pc<BlockMetadata>(6, _omitFieldNames ? '' : 'blocks', $pb.PbFieldType.PM, subBuilder: BlockMetadata.create)
+    ..aOS(7, _omitFieldNames ? '' : 'title')
+    ..aOS(8, _omitFieldNames ? '' : 'titleEn')
+    ..a<$core.int>(9, _omitFieldNames ? '' : 'date', $pb.PbFieldType.OU3)
     ..hasRequiredFields = false
   ;
 
@@ -80,7 +100,8 @@ class Footer extends $pb.GeneratedMessage {
   static Footer getDefault() => _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<Footer>(create);
   static Footer? _defaultInstance;
 
-  /// Version of the schema.
+  /// Version of the schema. When it's bigger than supported,
+  /// assume you cannot read the rest of the file.
   @$pb.TagNumber(1)
   $core.int get version => $_getIZ(0);
   @$pb.TagNumber(1)
@@ -90,17 +111,16 @@ class Footer extends $pb.GeneratedMessage {
   @$pb.TagNumber(1)
   void clearVersion() => clearField(1);
 
-  /// Date when the original GTFS feed was built, in YYMMDD format (240319).
-  /// Alternatively, a release number for the feed. The only requirement
+  /// A release number for the feed. The only requirement
   /// is that newer feeds should have this number greater than the older.
   @$pb.TagNumber(2)
-  $core.int get date => $_getIZ(1);
+  $core.int get build => $_getIZ(1);
   @$pb.TagNumber(2)
-  set date($core.int v) { $_setUnsignedInt32(1, v); }
+  set build($core.int v) { $_setUnsignedInt32(1, v); }
   @$pb.TagNumber(2)
-  $core.bool hasDate() => $_has(1);
+  $core.bool hasBuild() => $_has(1);
   @$pb.TagNumber(2)
-  void clearDate() => clearField(2);
+  void clearBuild() => clearField(2);
 
   /// In case of errors, this would be the reference GTFS feed, zip file itself.
   /// Please link to specific builds if possible, e.g. "20240319", not "latest".
@@ -124,9 +144,42 @@ class Footer extends $pb.GeneratedMessage {
   @$pb.TagNumber(4)
   void clearCompressed() => clearField(4);
 
+  /// Four integers, coordinated multiplied by 100. First two are lat and lon
+  /// of the south-western corner rounded down, other are for the NE corner rounded up.
+  @$pb.TagNumber(5)
+  $core.List<$core.int> get bboxLatLon => $_getList(4);
+
   /// The rest of the file is blocks in random order.
   @$pb.TagNumber(6)
-  $core.List<BlockMetadata> get blocks => $_getList(4);
+  $core.List<BlockMetadata> get blocks => $_getList(5);
+
+  @$pb.TagNumber(7)
+  $core.String get title => $_getSZ(6);
+  @$pb.TagNumber(7)
+  set title($core.String v) { $_setString(6, v); }
+  @$pb.TagNumber(7)
+  $core.bool hasTitle() => $_has(6);
+  @$pb.TagNumber(7)
+  void clearTitle() => clearField(7);
+
+  @$pb.TagNumber(8)
+  $core.String get titleEn => $_getSZ(7);
+  @$pb.TagNumber(8)
+  set titleEn($core.String v) { $_setString(7, v); }
+  @$pb.TagNumber(8)
+  $core.bool hasTitleEn() => $_has(7);
+  @$pb.TagNumber(8)
+  void clearTitleEn() => clearField(8);
+
+  /// Date when the original GTFS feed was built, in YYMMDD format (240319).
+  @$pb.TagNumber(9)
+  $core.int get date => $_getIZ(8);
+  @$pb.TagNumber(9)
+  set date($core.int v) { $_setUnsignedInt32(8, v); }
+  @$pb.TagNumber(9)
+  $core.bool hasDate() => $_has(8);
+  @$pb.TagNumber(9)
+  void clearDate() => clearField(9);
 }
 
 class BlockMetadata extends $pb.GeneratedMessage {
@@ -280,9 +333,11 @@ class Agencies extends $pb.GeneratedMessage {
   @$pb.TagNumber(1)
   $core.List<Agency> get agencies => $_getList(0);
 
+  /// Markdown-formatted instructions in English on buying tickets and riding.
   @$pb.TagNumber(2)
   $core.List<$core.String> get ticketInfo => $_getList(1);
 
+  /// Links to the real-time information.
   @$pb.TagNumber(3)
   $core.List<Realtime> get realtime => $_getList(2);
 }
@@ -297,7 +352,7 @@ class Agency extends $pb.GeneratedMessage {
     $core.String? fareUrl,
     $core.String? email,
     $core.int? ticketInfo,
-    $core.int? realtime,
+    $core.Iterable<$core.int>? realtime,
   }) {
     final $result = create();
     if (name != null) {
@@ -325,7 +380,7 @@ class Agency extends $pb.GeneratedMessage {
       $result.ticketInfo = ticketInfo;
     }
     if (realtime != null) {
-      $result.realtime = realtime;
+      $result.realtime.addAll(realtime);
     }
     return $result;
   }
@@ -342,7 +397,7 @@ class Agency extends $pb.GeneratedMessage {
     ..aOS(6, _omitFieldNames ? '' : 'fareUrl')
     ..aOS(7, _omitFieldNames ? '' : 'email')
     ..a<$core.int>(8, _omitFieldNames ? '' : 'ticketInfo', $pb.PbFieldType.OU3)
-    ..a<$core.int>(9, _omitFieldNames ? '' : 'realtime', $pb.PbFieldType.OU3)
+    ..p<$core.int>(9, _omitFieldNames ? '' : 'realtime', $pb.PbFieldType.KU3)
     ..hasRequiredFields = false
   ;
 
@@ -440,15 +495,9 @@ class Agency extends $pb.GeneratedMessage {
   @$pb.TagNumber(8)
   void clearTicketInfo() => clearField(8);
 
-  /// index + 1 from Agencies.realtime
+  /// index + 1 from Agencies.realtime. There can be multiple (e.g. vehicle positions + delays)
   @$pb.TagNumber(9)
-  $core.int get realtime => $_getIZ(8);
-  @$pb.TagNumber(9)
-  set realtime($core.int v) { $_setUnsignedInt32(8, v); }
-  @$pb.TagNumber(9)
-  $core.bool hasRealtime() => $_has(8);
-  @$pb.TagNumber(9)
-  void clearRealtime() => clearField(9);
+  $core.List<$core.int> get realtime => $_getList(8);
 }
 
 class Realtime extends $pb.GeneratedMessage {
@@ -690,6 +739,7 @@ class StopMetadata extends $pb.GeneratedMessage {
     $core.Iterable<$core.int>? chunkLengths,
     $core.Iterable<$core.int>? chunkStopCounts,
     $core.bool? hasStations,
+    $core.bool? hasDirections,
   }) {
     final $result = create();
     if (geohashXor != null) {
@@ -707,6 +757,9 @@ class StopMetadata extends $pb.GeneratedMessage {
     if (hasStations != null) {
       $result.hasStations = hasStations;
     }
+    if (hasDirections != null) {
+      $result.hasDirections = hasDirections;
+    }
     return $result;
   }
   StopMetadata._() : super();
@@ -719,6 +772,7 @@ class StopMetadata extends $pb.GeneratedMessage {
     ..p<$core.int>(3, _omitFieldNames ? '' : 'chunkLengths', $pb.PbFieldType.KS3)
     ..p<$core.int>(4, _omitFieldNames ? '' : 'chunkStopCounts', $pb.PbFieldType.KU3)
     ..aOB(5, _omitFieldNames ? '' : 'hasStations')
+    ..aOB(6, _omitFieldNames ? '' : 'hasDirections')
     ..hasRequiredFields = false
   ;
 
@@ -773,6 +827,16 @@ class StopMetadata extends $pb.GeneratedMessage {
   $core.bool hasHasStations() => $_has(4);
   @$pb.TagNumber(5)
   void clearHasStations() => clearField(5);
+
+  /// If false, the direction in chunks is skipped.
+  @$pb.TagNumber(6)
+  $core.bool get hasDirections => $_getBF(5);
+  @$pb.TagNumber(6)
+  set hasDirections($core.bool v) { $_setBool(5, v); }
+  @$pb.TagNumber(6)
+  $core.bool hasHasDirections() => $_has(5);
+  @$pb.TagNumber(6)
+  void clearHasDirections() => clearField(6);
 }
 
 ///  Column-oriented set of stops. Which means, it's a set
@@ -796,6 +860,7 @@ class StopsChunk extends $pb.GeneratedMessage {
     $core.Iterable<$core.int>? routeIds,
     $core.bool? isStation,
     $core.int? parentId,
+    Direction? direction,
     $core.int? geohash,
   }) {
     final $result = create();
@@ -829,6 +894,9 @@ class StopsChunk extends $pb.GeneratedMessage {
     if (parentId != null) {
       $result.parentId = parentId;
     }
+    if (direction != null) {
+      $result.direction = direction;
+    }
     if (geohash != null) {
       $result.geohash = geohash;
     }
@@ -849,6 +917,7 @@ class StopsChunk extends $pb.GeneratedMessage {
     ..p<$core.int>(8, _omitFieldNames ? '' : 'routeIds', $pb.PbFieldType.KU3)
     ..aOB(9, _omitFieldNames ? '' : 'isStation')
     ..a<$core.int>(10, _omitFieldNames ? '' : 'parentId', $pb.PbFieldType.OU3)
+    ..e<Direction>(11, _omitFieldNames ? '' : 'direction', $pb.PbFieldType.OE, defaultOrMaker: Direction.D_UNKNOWN, valueOf: Direction.valueOf, enumValues: Direction.values)
     ..a<$core.int>(30, _omitFieldNames ? '' : 'geohash', $pb.PbFieldType.OU3)
     ..hasRequiredFields = false
   ;
@@ -960,12 +1029,21 @@ class StopsChunk extends $pb.GeneratedMessage {
   @$pb.TagNumber(10)
   void clearParentId() => clearField(10);
 
+  @$pb.TagNumber(11)
+  Direction get direction => $_getN(10);
+  @$pb.TagNumber(11)
+  set direction(Direction v) { setField(11, v); }
+  @$pb.TagNumber(11)
+  $core.bool hasDirection() => $_has(10);
+  @$pb.TagNumber(11)
+  void clearDirection() => clearField(11);
+
   @$pb.TagNumber(30)
-  $core.int get geohash => $_getIZ(10);
+  $core.int get geohash => $_getIZ(11);
   @$pb.TagNumber(30)
-  set geohash($core.int v) { $_setUnsignedInt32(10, v); }
+  set geohash($core.int v) { $_setUnsignedInt32(11, v); }
   @$pb.TagNumber(30)
-  $core.bool hasGeohash() => $_has(10);
+  $core.bool hasGeohash() => $_has(11);
   @$pb.TagNumber(30)
   void clearGeohash() => clearField(30);
 }
@@ -1892,7 +1970,6 @@ class TripsChunk extends $pb.GeneratedMessage {
   /// Count is (number of trips) × (number of stops - 1)
   /// There are no missing values: we pre-calculate missing departure times.
   /// Mind the accumulated rounding error!
-  /// The entire list is delta-coded.
   @$pb.TagNumber(2)
   $core.List<$core.int> get departureDeltas => $_getList(1);
 

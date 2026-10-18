@@ -36,6 +36,7 @@ abstract class BinaryReader {
   int fileLengthImpl();
   void seekImpl(int offset);
   Uint8List readImpl(int length);
+  void close() {}
 }
 
 class BinaryDataReader extends BinaryReader {
@@ -69,4 +70,7 @@ class BinaryFileReader extends BinaryReader {
 
   @override
   Uint8List readImpl(int length) => _file.readSync(length);
+
+  @override
+  void close() => _file.closeSync();
 }

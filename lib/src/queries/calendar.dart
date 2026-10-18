@@ -40,18 +40,21 @@ class CalendarQueries {
     final bytes = access.read(offset, calendar.monthLengths[chunk]);
     final month = CalendarMonth.fromBuffer(bytes);
     int currentDate = chunk * calendar.daysInMonth;
-    int dayInMonth = -1;
-    while (currentDate < fromBase) {
-      if (dayInMonth < 0) {
-        currentDate += month.dateOffsets.isEmpty ? 0 : month.dateOffsets[0];
+    int dayInMonth = 0;
+    for (int i = 0; i < month.dates.length; i++) {
+      int skip;
+      if (i < month.dateOffsets.length) {
+        skip = month.dateOffsets[i];
       } else {
-        currentDate += dayInMonth >= month.dateOffsets.length ? 1 : month.dateOffsets[dayInMonth];
+        skip = i > 0 ? 1 : 0;
       }
-      dayInMonth++;
-    }
-    if (currentDate == fromBase && dayInMonth < month.dates.length) {
-      result.addAll(_deltaUncode(month.dates[dayInMonth].includedIn));
-      result.removeAll(_deltaUncode(month.dates[dayInMonth].exceptionIn));
+      currentDate += skip;
+
+      if (currentDate == fromBase) {
+        result.addAll(_deltaUncode(month.dates[i].includedIn));
+        result.removeAll(_deltaUncode(month.dates[i].exceptionIn));
+      }
+      if (currentDate >= fromBase) break;
     }
 
     _servicesCache[date] = result;

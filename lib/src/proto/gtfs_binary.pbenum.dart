@@ -41,10 +41,14 @@ class Block extends $pb.ProtobufEnum {
 class RealtimeType extends $pb.ProtobufEnum {
   static const RealtimeType RT_UNKNOWN = RealtimeType._(0, _omitEnumNames ? '' : 'RT_UNKNOWN');
   static const RealtimeType RT_GTFS = RealtimeType._(1, _omitEnumNames ? '' : 'RT_GTFS');
+  static const RealtimeType RT_SIRI = RealtimeType._(2, _omitEnumNames ? '' : 'RT_SIRI');
+  static const RealtimeType RT_SIRI_JSON = RealtimeType._(3, _omitEnumNames ? '' : 'RT_SIRI_JSON');
 
   static const $core.List<RealtimeType> values = <RealtimeType> [
     RT_UNKNOWN,
     RT_GTFS,
+    RT_SIRI,
+    RT_SIRI_JSON,
   ];
 
   static final $core.Map<$core.int, RealtimeType> _byValue = $pb.ProtobufEnum.initByValue(values);
@@ -68,6 +72,27 @@ class Accessibility extends $pb.ProtobufEnum {
   static Accessibility? valueOf($core.int value) => _byValue[value];
 
   const Accessibility._($core.int v, $core.String n) : super(v, n);
+}
+
+class Direction extends $pb.ProtobufEnum {
+  static const Direction D_UNKNOWN = Direction._(0, _omitEnumNames ? '' : 'D_UNKNOWN');
+  static const Direction D_NORTH = Direction._(1, _omitEnumNames ? '' : 'D_NORTH');
+  static const Direction D_EAST = Direction._(2, _omitEnumNames ? '' : 'D_EAST');
+  static const Direction D_SOUTH = Direction._(3, _omitEnumNames ? '' : 'D_SOUTH');
+  static const Direction D_WEST = Direction._(4, _omitEnumNames ? '' : 'D_WEST');
+
+  static const $core.List<Direction> values = <Direction> [
+    D_UNKNOWN,
+    D_NORTH,
+    D_EAST,
+    D_SOUTH,
+    D_WEST,
+  ];
+
+  static final $core.Map<$core.int, Direction> _byValue = $pb.ProtobufEnum.initByValue(values);
+  static Direction? valueOf($core.int value) => _byValue[value];
+
+  const Direction._($core.int v, $core.String n) : super(v, n);
 }
 
 class PickupDropoff extends $pb.ProtobufEnum {

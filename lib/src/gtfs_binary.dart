@@ -176,8 +176,6 @@ class GtfsBinary {
     final hashes = geohash.forCircle(center.latitude, center.longitude, radiusMeters, StopQueries.kGeohashPrecision);
     final allStops = stopQueries!.findStopsForGeohashes(hashes);
     final distance = DistanceEquirectangular();
-    final distances = allStops.map((s) => (s.gtfsId, distance(center, s.location))).toList();
-    print('Distances: $distances');
     return allStops.where((s) => distance(center, s.location) <= radiusMeters).toList();
   }
 
@@ -227,7 +225,7 @@ class GtfsBinary {
       for (final itinerary in route.itineraries) {
         final sequenceId = itinerary.stopIds.indexOf(stop.feedId);
         if (sequenceId < 0) continue;
-        if (!itinerary.serviceIds.any((serviceId) => services.contains(serviceId))) continue;
+        if (!itinerary.serviceIds.toSet().any((serviceId) => services.contains(serviceId))) continue;
 
         // We have itineraries with the given stop and trips on the day, time to decode.
         final allTrips = routeQueries!.readTrips(itinerary, route);
