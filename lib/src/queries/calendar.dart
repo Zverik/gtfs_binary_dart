@@ -40,7 +40,6 @@ class CalendarQueries {
     final bytes = access.read(offset, calendar.monthLengths[chunk]);
     final month = CalendarMonth.fromBuffer(bytes);
     int currentDate = chunk * calendar.daysInMonth;
-    int dayInMonth = 0;
     for (int i = 0; i < month.dates.length; i++) {
       int skip;
       if (i < month.dateOffsets.length) {
